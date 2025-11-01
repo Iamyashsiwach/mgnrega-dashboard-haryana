@@ -84,8 +84,7 @@ jobs:
             --exclude=.env.production \
             --exclude='*.tar.gz' \
             --exclude='.azure-vm-ip' \
-            --warning=no-file-changed \
-            .
+            . || ([ $? -eq 1 ] && echo "Warning: Some files changed during archiving, continuing..." || exit $?)
       
       - name: Upload to Azure VM
         run: |

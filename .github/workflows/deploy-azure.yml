@@ -77,9 +77,14 @@ jobs:
             --exclude=node_modules \
             --exclude=.next \
             --exclude=.git \
+            --exclude=.github \
             --exclude=postgres_data \
             --exclude=.env \
             --exclude=.env.local \
+            --exclude=.env.production \
+            --exclude='*.tar.gz' \
+            --exclude='.azure-vm-ip' \
+            --warning=no-file-changed \
             .
       
       - name: Upload to Azure VM

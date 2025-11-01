@@ -4,9 +4,6 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   reactStrictMode: true,
   poweredByHeader: false,
-  
-  // Enable SWC minification for better performance
-  swcMinify: true,
 
   // Image optimization
   images: {

@@ -93,9 +93,28 @@ export default function Home() {
       },
       (error) => {
         console.error('Geolocation error:', error);
-        alert(language === 'hi'
-          ? 'स्थान की अनुमति अस्वीकृत। कृपया अपना जिला मैन्युअल रूप से चुनें।'
-          : 'Location permission denied. Please select your district manually.');
+        
+        let errorMessage = '';
+        
+        if (error.code === 1) { // PERMISSION_DENIED
+          errorMessage = language === 'hi'
+            ? '⚠️ स्थान सुविधा HTTP पर काम नहीं करती।\n\nकृपया नीचे से अपना जिला चुनें। 👇'
+            : '⚠️ Location feature requires HTTPS to work.\n\nPlease select your district from the list below. 👇';
+        } else if (error.code === 2) { // POSITION_UNAVAILABLE
+          errorMessage = language === 'hi'
+            ? 'स्थान उपलब्ध नहीं है। कृपया अपना जिला चुनें।'
+            : 'Location unavailable. Please select your district manually.';
+        } else if (error.code === 3) { // TIMEOUT
+          errorMessage = language === 'hi'
+            ? 'समय समाप्त। कृपया अपना जिला चुनें।'
+            : 'Request timeout. Please select your district manually.';
+        } else {
+          errorMessage = language === 'hi'
+            ? 'स्थान की अनुमति अस्वीकृत। कृपया अपना जिला मैन्युअल रूप से चुनें।'
+            : 'Location permission denied. Please select your district manually.';
+        }
+        
+        alert(errorMessage);
         setDetectingLocation(false);
       }
     );

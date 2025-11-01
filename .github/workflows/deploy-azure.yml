@@ -88,7 +88,8 @@ jobs:
       
       - name: Upload to Azure VM
         run: |
-          scp -i ~/.ssh/azure_key deploy.tar.gz ${{ secrets.AZURE_SSH_USER }}@${{ secrets.AZURE_VM_IP }}:/tmp/
+          echo "Uploading to ${{ secrets.AZURE_SSH_USER }}@${{ secrets.AZURE_VM_IP }}"
+          scp -i ~/.ssh/azure_key -o StrictHostKeyChecking=no deploy.tar.gz ${{ secrets.AZURE_SSH_USER }}@${{ secrets.AZURE_VM_IP }}:/tmp/
       
       - name: Deploy on Azure VM
         run: |

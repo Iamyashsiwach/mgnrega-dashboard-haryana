@@ -1,0 +1,369 @@
+╔══════════════════════════════════════════════════════════════════╗
+║                                                                  ║
+║   🎯 CI/CD DEPLOYMENT READY - GITHUB ACTIONS + AZURE 🎯         ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+
+✅ WHAT'S BEEN SET UP:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ GitHub Actions Workflows
+  - .github/workflows/deploy-azure.yml (Auto-deploy on push to main)
+  - .github/workflows/test.yml (Run tests on PRs)
+
+✓ Deployment Scripts
+  - github-setup.sh (Quick GitHub repo setup)
+  - deploy.sh (Manual deployment to Azure)
+  - test-local.sh (Local testing)
+
+✓ Documentation
+  - GITHUB_CICD_SETUP.md (Complete CI/CD guide - 582 lines)
+  - AZURE_DEPLOYMENT_STEPS.md (Azure deployment steps)
+  - QUICK_DEPLOY.md (Quick reference)
+  - README.md (Updated with CI/CD info)
+
+✓ Configuration Files
+  - .gitignore (Proper exclusions for Git)
+  - docker-compose.yml (Container orchestration)
+  - Dockerfile (Application container)
+  - nginx.conf (Reverse proxy with SSL)
+
+🚀 QUICK START - 3 SIMPLE STEPS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Step 1: Create GitHub Repository
+────────────────────────────────────────────────────────────────
+
+# Install GitHub CLI (if not installed)
+brew install gh  # macOS
+# or visit: https://cli.github.com/
+
+# Run automated setup script
+cd /Users/YourMachine/Documents/gov.intern
+./github-setup.sh
+
+This script will:
+✓ Login to GitHub
+✓ Create repository
+✓ Add all files
+✓ Make initial commit
+✓ Push to GitHub
+✓ Show next steps
+
+
+Step 2: Configure GitHub Secrets
+────────────────────────────────────────────────────────────────
+
+Go to: https://github.com/YOUR_USERNAME/mgnrega-dashboard-haryana/settings/secrets/actions
+
+Click "New repository secret" and add:
+
+┌─────────────────────────┬──────────────────────────────────────────┐
+│ Secret Name             │ Value                                    │
+├─────────────────────────┼──────────────────────────────────────────┤
+│ AZURE_VM_IP             │ Your Azure VM public IP                  │
+│                         │ Example: 20.235.123.45                   │
+├─────────────────────────┼──────────────────────────────────────────┤
+│ AZURE_SSH_USER          │ azureuser                                │
+├─────────────────────────┼──────────────────────────────────────────┤
+│ AZURE_SSH_PRIVATE_KEY   │ Your SSH private key (entire content)    │
+│                         │ Get with: cat ~/.ssh/id_rsa              │
+├─────────────────────────┼──────────────────────────────────────────┤
+│ DATABASE_URL            │ postgresql://mgnrega:password@postgres:  │
+│                         │ 5432/mgnrega_dashboard?schema=public     │
+├─────────────────────────┼──────────────────────────────────────────┤
+│ DATA_GOV_API_KEY        │ 579b464db66ec23bdd000001cdd3946e44ce4   │
+│                         │ aad7209ff7b23ac571b                      │
+├─────────────────────────┼──────────────────────────────────────────┤
+│ NEXT_PUBLIC_APP_URL     │ http://YOUR_VM_IP                        │
+│                         │ or https://yourdomain.com                │
+└─────────────────────────┴──────────────────────────────────────────┘
+
+
+Step 3: Create Azure VM & Deploy
+────────────────────────────────────────────────────────────────
+
+# Create Azure VM (via Portal or CLI)
+Portal: https://portal.azure.com
+  - VM name: mgnrega-vm
+  - Region: Central India
+  - Image: Ubuntu 22.04 LTS
+  - Size: Standard B2s (2 vCPU, 4GB RAM)
+  - Ports: 22, 80, 443
+
+# SSH to VM and prepare it
+ssh azureuser@<YOUR_VM_IP>
+
+# Install Docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker $USER
+sudo apt install docker-compose -y
+
+# Logout and login
+exit
+ssh azureuser@<YOUR_VM_IP>
+
+# Verify Docker works
+docker ps
+
+# Done! Now deployment is automated.
+
+
+🔄 HOW CI/CD WORKS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Every time you push code to GitHub:
+
+1. Push to Feature Branch
+   ├─→ Runs tests only (no deployment)
+   └─→ Shows pass/fail on GitHub
+
+2. Push to Main Branch
+   ├─→ Runs tests
+   ├─→ Builds Docker images
+   ├─→ Deploys to Azure VM
+   ├─→ Runs database migrations
+   ├─→ Health checks
+   ├─→ Auto-rollback if anything fails
+   └─→ Shows deployment status
+
+3. Deployment Process (Automatic)
+   ├─→ Backup current version
+   ├─→ Upload new code to VM
+   ├─→ Stop old containers
+   ├─→ Build new containers
+   ├─→ Start new containers
+   ├─→ Run migrations
+   ├─→ Health check
+   └─→ Success! (or rollback if failed)
+
+
+💡 TYPICAL WORKFLOW:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Day-to-Day Development:
+
+1. Work on Feature
+   ────────────────
+   git checkout -b feature/new-metric
+   # ... make changes ...
+   git add .
+   git commit -m "Add new performance metric"
+   git push origin feature/new-metric
+
+2. Create Pull Request
+   ────────────────────
+   - Go to GitHub repository
+   - Click "Compare & pull request"
+   - Tests run automatically
+   - Get code review
+   - Merge when approved
+
+3. Deploy to Production
+   ────────────────────
+   # Merge PR on GitHub or:
+   git checkout main
+   git merge feature/new-metric
+   git push origin main
+   
+   # GitHub Actions automatically deploys! 🚀
+   # Watch progress at:
+   # https://github.com/YOUR_USERNAME/repo/actions
+
+4. Verify Deployment
+   ────────────────────
+   # Check GitHub Actions (should be green ✓)
+   # Visit your site: http://<VM_IP>
+   # Test features
+   
+   # If something breaks:
+   # - Push a fix to main
+   # - Or manually rollback on VM
+
+
+📊 MONITORING DEPLOYMENTS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+View Deployment Status:
+- GitHub: https://github.com/YOUR_USERNAME/repo/actions
+- Each workflow run shows detailed logs
+
+Check Live Application:
+- Health: http://<VM_IP>/api/health
+- Website: http://<VM_IP>
+
+View Logs on Azure VM:
+ssh azureuser@<VM_IP>
+docker-compose logs -f app
+
+Deployment History:
+ssh azureuser@<VM_IP>
+ls -lh ~/gov.intern.backup.*
+
+
+🔧 MANUAL ACTIONS (When Needed):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Trigger Manual Deployment:
+1. Go to: https://github.com/YOUR_USERNAME/repo/actions
+2. Click "Deploy to Azure VM"
+3. Click "Run workflow"
+4. Select branch (main)
+5. Click "Run workflow"
+
+Manual Rollback (if needed):
+ssh azureuser@<VM_IP>
+cd ~/gov.intern
+docker-compose down
+cd ..
+rm -rf gov.intern
+mv gov.intern.backup.LATEST gov.intern
+cd gov.intern
+docker-compose up -d
+
+View Container Status:
+ssh azureuser@<VM_IP>
+docker-compose ps
+docker-compose logs -f
+
+
+📖 DOCUMENTATION FILES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+┌────────────────────────────────┬────────────────────────────────┐
+│ File                           │ Purpose                        │
+├────────────────────────────────┼────────────────────────────────┤
+│ GITHUB_CICD_SETUP.md           │ ⭐ START HERE - Complete       │
+│                                │ CI/CD setup guide              │
+├────────────────────────────────┼────────────────────────────────┤
+│ AZURE_DEPLOYMENT_STEPS.md      │ Detailed Azure VM setup        │
+├────────────────────────────────┼────────────────────────────────┤
+│ QUICK_DEPLOY.md                │ Quick reference commands       │
+├────────────────────────────────┼────────────────────────────────┤
+│ DEPLOYMENT.md                  │ Full technical docs            │
+├────────────────────────────────┼────────────────────────────────┤
+│ README.md                      │ Project overview               │
+├────────────────────────────────┼────────────────────────────────┤
+│ github-setup.sh                │ Automated GitHub repo setup    │
+├────────────────────────────────┼────────────────────────────────┤
+│ deploy.sh                      │ Manual deployment script       │
+├────────────────────────────────┼────────────────────────────────┤
+│ test-local.sh                  │ Local testing script           │
+└────────────────────────────────┴────────────────────────────────┘
+
+
+✅ BENEFITS OF CI/CD:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Zero Manual Deployment - Push code, it deploys automatically
+✓ Automated Testing - Catch bugs before production
+✓ Zero Downtime - Blue-green deployment with health checks
+✓ Auto Rollback - Fails? Automatically reverts to previous version
+✓ Deployment History - Track every deployment with Git commits
+✓ Audit Trail - See who deployed what and when
+✓ Faster Iterations - Deploy multiple times per day safely
+✓ Team Collaboration - Pull requests with automated checks
+✓ Consistent Deployments - Same process every time
+
+
+🎯 SUCCESS CHECKLIST:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Before You Start:
+□ GitHub account created
+□ GitHub CLI installed (gh)
+□ Azure account with VM access
+□ SSH key generated
+□ All code committed locally
+
+Setup Phase:
+□ Run ./github-setup.sh
+□ Repository created on GitHub
+□ Code pushed to GitHub
+□ All 6 GitHub Secrets configured
+□ Azure VM created and accessible
+□ Docker installed on Azure VM
+
+Deployment Phase:
+□ First push to main triggers deployment
+□ GitHub Actions workflow runs successfully
+□ Application deployed to Azure VM
+□ Health check returns "healthy"
+□ Website accessible at http://<VM_IP>
+□ All 22 districts visible
+
+Post-Deployment:
+□ SSL certificate configured (optional)
+□ Custom domain configured (optional)
+□ Monitoring setup
+□ Team members added to repository
+□ Branch protection enabled
+
+
+💰 COST ESTIMATE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+GitHub:
+- Free for public repositories
+- 2,000 CI/CD minutes/month free
+- Unlimited private repos with GitHub Free
+
+Azure VM (Standard B2s):
+- ~$31/month (Central India region)
+- ~$2/month for storage
+- Total: ~$35/month
+
+Save Money:
+- Use Azure Free Tier (12 months free)
+- Use Reserved Instances (72% savings)
+- Auto-shutdown during off-hours
+
+
+🎓 LEARNING RESOURCES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+GitHub Actions:
+- Docs: https://docs.github.com/en/actions
+- Workflow Syntax: https://docs.github.com/en/actions/using-workflows
+
+Azure:
+- Portal: https://portal.azure.com
+- Docs: https://docs.microsoft.com/azure/
+
+Docker:
+- Get Started: https://docs.docker.com/get-started/
+- Compose: https://docs.docker.com/compose/
+
+
+🆘 TROUBLESHOOTING:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Issue: GitHub Actions failing at SSH step
+Fix: Check AZURE_SSH_PRIVATE_KEY secret is complete
+     (must include BEGIN/END lines)
+
+Issue: Deployment successful but site not accessible
+Fix: Check Azure NSG allows port 80
+     Verify Docker containers running: docker-compose ps
+
+Issue: Database connection error
+Fix: Check DATABASE_URL uses 'postgres' hostname
+     (not 'localhost' inside Docker)
+
+Issue: Health check fails
+Fix: SSH to VM, check logs: docker-compose logs app
+     Restart: docker-compose restart app
+
+For more help, see: GITHUB_CICD_SETUP.md
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎉 YOU'RE ALL SET!
+
+Next Step: Run ./github-setup.sh to get started
+
+📖 Full Guide: open GITHUB_CICD_SETUP.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

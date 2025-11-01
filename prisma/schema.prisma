@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model District {
+  id                String              @id @default(cuid())
+  code              String              @unique
+  nameEn            String              @map("name_en")
+  nameHi            String              @map("name_hi")
+  state             String              @default("Haryana")
+  population        Int?
+  latitude          Float?
+  longitude         Float?
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  monthlyPerformance MonthlyPerformance[]
+
+  @@map("districts")
+}
+
+model MonthlyPerformance {
+  id                    String   @id @default(cuid())
+  districtId            String   @map("district_id")
+  month                 Int
+  year                  Int
+  jobCardsIssued        Int?     @map("job_cards_issued")
+  personsWorked         Int?     @map("persons_worked")
+  personDaysGenerated   Float?   @map("person_days_generated")
+  avgWage               Float?   @map("avg_wage")
+  worksCompleted        Int?     @map("works_completed")
+  worksOngoing          Int?     @map("works_ongoing")
+  expenditure           Float?   @map("expenditure")
+  budgetUtilization     Float?   @map("budget_utilization")
+  lastUpdated           DateTime @default(now()) @map("last_updated")
+  createdAt             DateTime @default(now()) @map("created_at")
+  
+  district              District @relation(fields: [districtId], references: [id])
+
+  @@unique([districtId, month, year])
+  @@index([districtId])
+  @@index([month, year])
+  @@map("monthly_performance")
+}
+
+model APISyncLog {
+  id              String   @id @default(cuid())
+  syncDate        DateTime @default(now()) @map("sync_date")
+  status          String   // 'success', 'partial', 'failed'
+  recordsSynced   Int      @default(0) @map("records_synced")
+  errors          String?  @db.Text
+  duration        Int?     // in seconds
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@map("api_sync_logs")
+}
+
+model UserAnalytics {
+  id              String   @id @default(cuid())
+  districtCode    String?  @map("district_code")
+  pageView        String   @map("page_view")
+  userAgent       String?  @map("user_agent")
+  ipAddress       String?  @map("ip_address")
+  sessionId       String?  @map("session_id")
+  language        String?  @default("en")
+  timestamp       DateTime @default(now())
+
+  @@index([districtCode])
+  @@index([timestamp])
+  @@map("user_analytics")
+}

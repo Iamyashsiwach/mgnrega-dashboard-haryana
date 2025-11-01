@@ -6,6 +6,8 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json ./
+COPY prisma ./prisma
+COPY prisma.config.ts ./
 RUN npm ci
 
 # Stage 2: Builder
@@ -16,9 +18,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Copy environment variables (will be overridden at runtime)
-# ARG DATABASE_URL
-# ENV DATABASE_URL=${DATABASE_URL}
+# Ensure Prisma files are present
+COPY prisma ./prisma
+COPY prisma.config.ts ./
 
 # Generate Prisma Client
 RUN npx prisma generate
@@ -39,6 +41,8 @@ RUN adduser --system --uid 1001 nextjs
 
 # Install only production dependencies
 COPY package.json package-lock.json ./
+COPY prisma ./prisma
+COPY prisma.config.ts ./
 RUN npm ci --only=production && npm cache clean --force
 
 # Copy built application from builder
@@ -46,7 +50,9 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/prisma.config.ts ./
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/scripts ./scripts
 
 # Change ownership to nextjs user
 RUN chown -R nextjs:nodejs /app

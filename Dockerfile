@@ -8,6 +8,8 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 COPY prisma ./prisma
 COPY prisma.config.ts ./
+# Set dummy DATABASE_URL for Prisma client generation during build
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy?schema=public"
 RUN npm ci
 
 # Stage 2: Builder
@@ -22,7 +24,8 @@ COPY . .
 COPY prisma ./prisma
 COPY prisma.config.ts ./
 
-# Generate Prisma Client
+# Generate Prisma Client (using dummy DATABASE_URL from deps stage)
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy?schema=public"
 RUN npx prisma generate
 
 # Disable telemetry during build
@@ -43,6 +46,8 @@ RUN adduser --system --uid 1001 nextjs
 COPY package.json package-lock.json ./
 COPY prisma ./prisma
 COPY prisma.config.ts ./
+# Set dummy DATABASE_URL for Prisma client generation during build
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy?schema=public"
 RUN npm ci --only=production && npm cache clean --force
 
 # Copy built application from builder

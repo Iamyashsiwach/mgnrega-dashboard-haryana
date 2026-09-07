@@ -476,5 +476,5 @@ The platform is ready to serve millions of rural Indians seeking to understand a
 
 **Deployment**: Azure VM with Docker + Nginx + SSL
 
-**URL**: https://your-domain-here.com (after deployment)
+**URL**: http://98.70.24.48
 

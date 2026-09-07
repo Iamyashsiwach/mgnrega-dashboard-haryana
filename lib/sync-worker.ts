@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import { prisma } from './prisma';
-import { fetchHaryanaDistrictData, generateMockDistrictData } from './data-gov-api';
+import { fetchHaryanaDistrictData, generateMockDistrictData, type MgnregaRecord } from './data-gov-api';
 import { getAllDistricts } from './geolocation';
 
 const SYNC_ENABLED = process.env.SYNC_ENABLED === 'true';
@@ -49,7 +49,7 @@ export async function syncMGNREGAData(useMockData: boolean = false): Promise<Syn
     const month = currentDate.getMonth() + 1;
     const year = currentDate.getFullYear();
 
-    let apiData: any[] = [];
+    let apiData: MgnregaRecord[] = [];
 
     if (useMockData) {
       // Use mock data for development/testing
@@ -205,7 +205,7 @@ export async function syncHistoricalData(monthsBack: number = 12, useMockData: b
     console.log(`[Sync] Syncing data for ${month}/${year}...`);
 
     try {
-      let apiData: any[] = [];
+      let apiData: MgnregaRecord[] = [];
 
       if (useMockData) {
         const districts = getAllDistricts();

@@ -90,10 +90,9 @@ export async function GET(
       },
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const districtsWithPerformance = allDistricts
-      .filter((d: any) => d.monthlyPerformance.length > 0)
-      .map((d: any) => ({
+      .filter((d) => d.monthlyPerformance.length > 0)
+      .map((d) => ({
         code: d.code,
         nameEn: d.nameEn,
         nameHi: d.nameHi,
@@ -101,7 +100,7 @@ export async function GET(
         expenditure: d.monthlyPerformance[0].expenditure || 0,
         budgetUtilization: d.monthlyPerformance[0].budgetUtilization || 0,
       }))
-      .sort((a: any, b: any) => b.personsWorked - a.personsWorked);
+      .sort((a, b) => b.personsWorked - a.personsWorked);
 
     return NextResponse.json({
       success: true,

@@ -11,12 +11,13 @@ export default function LanguageToggle({ onLanguageChange }: LanguageToggleProps
   const [language, setLanguage] = useState<'en' | 'hi'>('en');
 
   useEffect(() => {
-    // Load language from localStorage
-    const saved = localStorage.getItem('language') as 'en' | 'hi';
-    if (saved) {
+    const saved = localStorage.getItem('language');
+    if (saved !== 'en' && saved !== 'hi') return;
+    const id = window.setTimeout(() => {
       setLanguage(saved);
       onLanguageChange?.(saved);
-    }
+    }, 0);
+    return () => clearTimeout(id);
   }, [onLanguageChange]);
 
   const toggleLanguage = () => {

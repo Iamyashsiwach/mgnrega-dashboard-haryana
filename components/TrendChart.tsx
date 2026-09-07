@@ -1,7 +1,29 @@
 'use client';
 
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { getMonthName } from '@/lib/analytics';
+
+function CustomTooltip({
+  active,
+  payload,
+  color,
+}: {
+  active?: boolean;
+  payload?: Array<{ value: number; payload: { name: string } }>;
+  color: string;
+}) {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white p-3 border-2 border-gray-200 rounded-lg shadow-lg">
+        <p className="font-semibold">{payload[0].payload.name}</p>
+        <p className="text-lg font-bold" style={{ color }}>
+          {payload[0].value.toLocaleString('en-IN')}
+        </p>
+      </div>
+    );
+  }
+  return null;
+}
 
 interface TrendChartProps {
   data: Array<{
@@ -33,20 +55,6 @@ export default function TrendChart({
       value: item.value || 0,
     }));
 
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-white p-3 border-2 border-gray-200 rounded-lg shadow-lg">
-          <p className="font-semibold">{payload[0].payload.name}</p>
-          <p className="text-lg font-bold" style={{ color }}>
-            {payload[0].value.toLocaleString('en-IN')}
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
     <div className="bg-white p-4 md:p-6 rounded-xl border-2 border-gray-200">
       <h3 className="text-lg md:text-xl font-bold mb-4">{title}</h3>
@@ -70,7 +78,7 @@ export default function TrendChart({
                   return value;
                 }}
               />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<CustomTooltip color={color} />} />
               <Line
                 type="monotone"
                 dataKey="value"
@@ -98,7 +106,7 @@ export default function TrendChart({
                   return value;
                 }}
               />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<CustomTooltip color={color} />} />
               <Bar dataKey="value" fill={color} radius={[8, 8, 0, 0]} />
             </BarChart>
           )}

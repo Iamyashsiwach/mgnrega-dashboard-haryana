@@ -14,6 +14,26 @@ console.log('[data-gov-api] Environment loaded:', {
 // District-wise MGNREGA Data at a Glance
 const MGNREGA_RESOURCE_ID = 'ee03643a-ee4c-48c2-ac30-9f2ff26ab722';
 
+export interface MgnregaRecord {
+  district_code: string;
+  district_name: string;
+  state_name: string;
+  month: string | number;
+  year: string | number;
+  job_cards_issued: number;
+  persons_worked: number;
+  person_days_generated: number;
+  avg_wage: number;
+  works_completed: number;
+  works_ongoing: number;
+  expenditure: number;
+  budget_utilization: number;
+}
+
+interface DataGovResponse {
+  records?: Record<string, string>[];
+}
+
 interface RetryConfig {
   maxRetries: number;
   baseDelay: number;
@@ -56,9 +76,9 @@ function isRetryableError(error: AxiosError): boolean {
  * Fetch MGNREGA data with retry logic
  */
 export async function fetchMGNREGAData(
-  filters: Record<string, any> = {},
+  filters: Record<string, string> = {},
   config: Partial<RetryConfig> = {}
-): Promise<any> {
+): Promise<DataGovResponse> {
   const retryConfig = { ...defaultRetryConfig, ...config };
   let lastError: Error | null = null;
 
@@ -127,8 +147,8 @@ function getMonthNameForAPI(month: number): string {
 export async function fetchHaryanaDistrictData(
   year?: number,
   month?: number
-): Promise<any[]> {
-  const filters: Record<string, any> = {
+): Promise<MgnregaRecord[]> {
+  const filters: Record<string, string> = {
     'filters[state_name]': 'HARYANA',
   };
 
@@ -146,7 +166,7 @@ export async function fetchHaryanaDistrictData(
     const data = await fetchMGNREGAData(filters);
     // Map API fields to our expected format
     const records = data.records || [];
-    return records.map((record: any) => ({
+    return records.map((record) => ({
       district_code: record.district_code,
       district_name: record.district_name,
       state_name: record.state_name,
@@ -176,8 +196,8 @@ export async function fetchDistrictData(
   districtCode: string,
   year?: number,
   month?: number
-): Promise<any> {
-  const filters: Record<string, any> = {
+): Promise<MgnregaRecord | null> {
+  const filters: Record<string, string> = {
     'filters[state_name]': 'HARYANA',
     'filters[district_code]': districtCode,
   };
@@ -235,7 +255,7 @@ export async function checkAPIHealth(): Promise<boolean> {
 /**
  * Mock data generator for development/testing when API is down
  */
-export function generateMockDistrictData(districtCode: string, districtName: string) {
+export function generateMockDistrictData(districtCode: string, districtName: string): MgnregaRecord {
   const currentDate = new Date();
   const month = currentDate.getMonth() + 1;
   const year = currentDate.getFullYear();

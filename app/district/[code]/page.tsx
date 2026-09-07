@@ -35,7 +35,12 @@ interface DistrictData {
     trendDirection: 'up' | 'down' | 'stable';
     performanceRating: 'good' | 'average' | 'needs_improvement';
   } | null;
-  trends: any;
+  trends: {
+    personsWorked: { trend: 'up' | 'down' | 'stable'; changePercent: number };
+    expenditure: { trend: 'up' | 'down' | 'stable'; changePercent: number };
+    worksCompleted: { trend: 'up' | 'down' | 'stable'; changePercent: number };
+    budgetUtilization: { trend: 'up' | 'down' | 'stable'; changePercent: number };
+  } | null;
 }
 
 export default function DistrictPage({ params }: { params: Promise<{ code: string }> }) {
